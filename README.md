@@ -32,6 +32,7 @@ Nginx+Lua
 |upstream_latency_{50,75,95,99}th|api|GAUGE|nginx upstream平均响应时间，按百分位统计|
 
 > api tag: 即nginx request uri，各统计项按照uri区分。当api为保留字`__serv__`时，代表nginx所有请求的综合统计
+>
 > error_count、upstream统计项根据实际情况，如果没有则不会输出
 
 ## 使用方法
@@ -90,6 +91,9 @@ Options:
 ```
 
 > `--use-ngx-host`: 使用nginx配置里的`service_name`作为采集项的`endpoint`
+>
 > `--service`: 手动设置`endpoint`值，当指定`--use-ngx-host`时，该参数无效
+>
 > `--format`: 采集数据输出格式，对接falcon请使用`--format=falcon`
+>
 > `--falcon-step`: falcon step设置，请设置为python脚本调用频率，默认是60

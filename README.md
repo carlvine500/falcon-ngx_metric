@@ -34,3 +34,31 @@ Nginx+Lua
 
 ## 使用方法
 ------------------------
+
+### 配置nginx
+
+* lua文件部署
+
+``` shell
+mkdir ${NGINX_HOME}/modules
+cp lua/* ${NGINX_HOME}/modules/
+```
+
+* nginx配置文件加载
+
+```shell
+cp ngx_metric.conf ${NGINX_CONF}/conf.d/
+
+# 确保nginx.conf include 该配置
+...
+include conf.d/*.conf;
+...
+```
+
+* 测试
+
+```shell
+python nginx_collect.py --format=falcon
+```
+
+* 将脚本加入crontab

@@ -66,3 +66,30 @@ python nginx_collect.py --format=falcon
 ```
 
 * 将脚本加入crontab
+
+### nginx_collect.py 脚本参数说明
+
+```shell
+python nginx_collect.py -h
+
+Usage: nginx_collect.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  --use-ngx-host        use the ngx collect lib output host as service column,
+                        default read self
+  --service=SERVICE     logic service name(endpoint in falcon) of metrics, use
+                        nginx service_name as the value when --use-ngx-host
+                        specified. default is ngx_metric
+  --format=FORMAT       output format, valid values "odin|falcon", default is
+                        odin
+  --falcon-step=FALCON_STEP
+                        Falcon only. metric step
+  --ngx-out-sep=NGX_OUT_SEP
+                        ngx output status seperator, default is "|"
+```
+
+> `--use-ngx-host`: 使用nginx配置里的`service_name`作为采集项的`endpoint`
+> `--service`: 手动设置`endpoint`值，当指定`--use-ngx-host`时，该参数无效
+> `--format`: 采集数据输出格式，对接falcon请使用`--format=falcon`
+> `--falcon-step`: falcon step设置，请设置为python脚本调用频率，默认是60

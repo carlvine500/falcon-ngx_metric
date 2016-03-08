@@ -9,7 +9,9 @@ ngx_metric(Nginx-Metric) -- Open-Falcon的Nginx Web Server请求数据采集工�
 --------------------------
 
 System: Linux
+
 Python: >= 2.6
+
 Nginx+Lua
 
 ## 主要逻辑

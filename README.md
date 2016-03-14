@@ -56,6 +56,21 @@ cp ngx_metric.conf ${NGINX_CONF}/conf.d/
 ...
 include conf.d/*.conf;
 ...
+
+```
+
+* 配置uri长度截取
+
+```shell
+# 当uri过长，或者使用RESTful uri时，容易把具体ID带到uri进行统计，与实际情况相悖。
+# ngx_metric里对uri进行了截断，默认是以"/"分隔，截取三段，可以自由配置
+
+server {
+    ...
+    # 该server下uri统计时截取5段
+    set $ngx_metric_uri_truncation_len 5;
+    ...
+}
 ```
 
 ### lua结果解析

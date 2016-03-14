@@ -59,7 +59,7 @@ include conf.d/*.conf;
 
 ```
 
-* 配置uri长度截取
+* 配置uri长度截取【可选】
 
 ```shell
 # 当uri过长，或者使用RESTful uri时，容易把具体ID带到uri进行统计，与实际情况相悖。

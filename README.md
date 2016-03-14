@@ -97,3 +97,9 @@ Options:
 > `--format`: 采集数据输出格式，对接falcon请使用`--format=falcon`
 >
 > `--falcon-step`: falcon step设置，请设置为python脚本调用频率，默认是60
+
+## Screenshot
+
+![Endpoint搜索](images/head.png)
+----------------
+![折线图](images/detail.png)

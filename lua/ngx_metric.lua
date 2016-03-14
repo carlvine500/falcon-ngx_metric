@@ -24,14 +24,30 @@ function req_sign(t)
     return t .. item_sep .. ngx.var.server_name .. item_sep .. cutted_uri
 end
 
+function safe_incr(metric, value)
+    local newval, err = result_dict:incr(metric, value)
+    if not newval and err == "not found" then
+        ok, err = result_dict:safe_add(metric, value)
+        if err == "exists" then
+            result_dict:incr(metric, value)
+        elseif err == "no memory" then
+            ngx.log(ngx.ERR, "no memory for ngx_metric add kv: " .. metric .. ":" .. value)
+        end
+    end
+end
+
+function safe_set(metric, value)
+    ok, err = result_dict:safe_set(metric, value)
+    if err == "no memory" then
+        ngx.log(ngx.ERR, "no memory for ngx_metric set kv: " .. metric .. ":" .. value)
+    end
+end
+
 ---- 请求次数统计, counter类型
 function query_count()
 
     local metric = req_sign("query_count")
-    local newval, err = result_dict:incr(metric, 1)
-    if not newval and err == "not found" then
-        result_dict:add(metric, 1)
-    end
+    safe_incr(metric, 1)
 
 end
 
@@ -44,7 +60,7 @@ function latency()
     local latency_list = result_dict:get(metric) or ""
     latency_list = latency_list..latency..","
 
-    result_dict:set(metric, latency_list)
+    safe_set(metric, latency_list)
 
 end
 
@@ -63,10 +79,7 @@ function err_count()
 --        end
 
         local metric_err_detail = metric_err_qc.."|"..status_code
-        newval, err = result_dict:incr(metric_err_detail, 1)
-        if not newval and err == "not found" then
-            result_dict:add(metric_err_detail, 1)
-        end
+        safe_incr(metric_err_detail, 1)
     end
 
 end
@@ -84,10 +97,7 @@ function upstream_time()
     local resp_time_arr = str_split(upstream_response_time_s, ",")
 
     local metric = req_sign("upstream_contacts")
-    newval, err = result_dict:incr(metric, 1)
-    if not newval and err == "not found" then
-        result_dict:add(metric, 1)
-    end
+    safe_incr(metric, 1)
 
     local duration = 0.0
     for _, t in pairs(resp_time_arr) do
@@ -99,7 +109,7 @@ function upstream_time()
     local metric_upstream_latency = req_sign("upstream_latency")
     local latency_list = result_dict:get(metric_upstream_latency) or ""
     latency_list = latency_list..duration..","
-    result_dict:set(metric_upstream_latency, latency_list)
+    safe_set(metric_upstream_latency, latency_list)
 
 end
 

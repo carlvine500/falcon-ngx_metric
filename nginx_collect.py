@@ -38,9 +38,9 @@ class Histogram(object):
 
         self.values.sort()
 
-        self.sortValues = [self.values[0]]
-        for i in range(1, len(self.values)):
-            self.sortValues.insert(i, self.sortValues[i - 1] + self.values[i])
+#        self.sortValues = [self.values[0]]
+#        for i in range(1, len(self.values)):
+#            self.sortValues.insert(i, self.sortValues[i - 1] + self.values[i])
 
         self.dirty = False
 
@@ -52,7 +52,8 @@ class Histogram(object):
             return 0.0
 
         pos = min(int(percentile * len(self.values)), len(self.values))
-        return float(self.sortValues[pos]) / (pos + 1)
+        #return float(self.sortValues[pos]) / (pos + 1)
+        return self.values[pos]
 
     def percentiles(self):
         return [self.percentile(0.5), self.percentile(0.75), self.percentile(0.95), self.percentile(0.99)]
@@ -336,6 +337,40 @@ class RenderLatency(Render):
 
         return res
 
+class RenderDetailLatency(Render):
+
+    service_latency = {}
+    enable = False
+
+    @staticmethod
+    def render(la):
+        RenderDetailLatency.enable = True
+
+        if 4 != len(la):
+            return []
+
+        service = Render.get_service_name(la[1])
+
+        item_obj = Render.hash_default_get(RenderDetailLatency.service_latency, la[0], {})
+        ser_obj = Render.hash_default_get(item_obj, service, {'sum': 0, 'len': 0})
+        ser_obj['sum'] += float(la[3])
+        ser_obj['len'] += 1
+        item_obj[service] = ser_obj
+        RenderDetailLatency.service_latency[la[0]] = item_obj
+
+        return Render.pack(la[0], { 'service': service, 'api': la[2] }, float(la[3]))
+
+    @staticmethod
+    def service_stat():
+        res = []
+
+        for item, item_obj in RenderDetailLatency.service_latency.items():
+            for service, data in item_obj.items():
+                res += (Render.pack(item, {'service': service, 'api': Render.reserved_service_name}, data['sum'] / data['len']), )
+
+        RenderDetailLatency.service_latency = {}
+        return res
+
 class RenderUpstreamLatency(Render):
 
     metric = 'upstream_latency_'
@@ -376,9 +411,20 @@ class RenderUpstreamLatency(Render):
 renders = {
     'query_count': RenderQueryCount,
     'err_count': RenderErrCount,
+
     'latency': RenderLatency,
+    'latency_50th': RenderDetailLatency,
+    'latency_75th': RenderDetailLatency,
+    'latency_95th': RenderDetailLatency,
+    'latency_99th': RenderDetailLatency,
+
     'upstream_contacts': RenderUpstreamContacts,
+
     'upstream_latency': RenderUpstreamLatency,
+    'upstream_latency_50th': RenderDetailLatency,
+    'upstream_latency_75th': RenderDetailLatency,
+    'upstream_latency_95th': RenderDetailLatency,
+    'upstream_latency_99th': RenderDetailLatency,
 }
 
 derive_renders = {

@@ -87,7 +87,7 @@ class Render(object):
     def get_service_name(ngx_host = None):
         global options
 
-        if None != ngx_host and options.use_ngx_host:
+        if None != ngx_host and '' != ngx_host and options.use_ngx_host:
             return ngx_host
 
         return options.service

@@ -7,7 +7,7 @@ local util = require "ngx_metric.util"
 local histogram = require "ngx_metric.histogram"
 local avg = require "ngx_metric.avg"
 
-local CHUNK_SIZE = 1000
+local CHUNK_SIZE = 500
 local PERCENTILES = {50, 75, 95, 99}
 
 local CHUNK_PREFIX_RAWVAL = "chisto.rawval."

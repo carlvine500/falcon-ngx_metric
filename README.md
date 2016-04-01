@@ -78,6 +78,8 @@ server {
 * 测试
 
 ```shell
+pip install requests   # 可选，使用`--falcon-addr`时需要执行
+
 python nginx_collect.py --format=falcon
 ```
 
@@ -101,6 +103,8 @@ Options:
                         odin
   --falcon-step=FALCON_STEP
                         Falcon only. metric step
+  --falcon-addr=FALCON_ADDR
+                        Falcon only, the addr of falcon push api
   --ngx-out-sep=NGX_OUT_SEP
                         ngx output status seperator, default is "|"
 ```
@@ -112,6 +116,8 @@ Options:
 > `--format`: 采集数据输出格式，对接falcon请使用`--format=falcon`
 >
 > `--falcon-step`: falcon step设置，请设置为python脚本调用频率，默认是60
+>
+> `--falcon-addr`: falcon push接口设置，设置该参数数据直接推送，不再输出到终端。需要安装`requests`模块
 
 ## Screenshot
 

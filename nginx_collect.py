@@ -455,7 +455,13 @@ def collect():
         for key in derive_renders.keys():
             append_datapoint(datapoints, Render.service_stat(derive_renders[key]))
 
-        print json.dumps(datapoints, indent=4, sort_keys=True)
+        if options.format == 'falcon' and options.falcon_addr != '':
+            import requests
+            r = requests.post(options.falcon_addr, data=json.dumps(datapoints))
+            print "push to falcon result: " + r.text
+
+        else:
+            print json.dumps(datapoints, indent=4, sort_keys=True)
 
     except Exception as e:
         traceback.print_exc(file = sys.stderr)
@@ -470,6 +476,7 @@ if __name__ == "__main__":
     parser.add_option('--format', dest='format', default='odin', help='output format, valid values "odin|falcon", default is odin')
 
     parser.add_option('--falcon-step', dest='falcon_step', type='int', default=60, help='Falcon only. metric step')
+    parser.add_option('--falcon-addr', dest='falcon_addr', default='', help='Falcon only, the addr of falcon push api')
 
     parser.add_option('--ngx-out-sep', dest='ngx_out_sep', default='|', help='ngx output status seperator, default is "|"')
 

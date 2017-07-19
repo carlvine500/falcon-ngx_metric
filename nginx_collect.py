@@ -5,7 +5,7 @@ import sys, urllib, time, json, traceback
 from optparse import OptionParser
 
 NG_STATUS_URI = 'http://127.0.0.1:9091/monitor/basic_status'
-
+SKIP_WORDS = ('/resource/','.js','.css','.jpg','.png','/monitor/','/favicon')
 class Histogram(object):
 
     def __init__(self, values = None):
@@ -437,6 +437,13 @@ def append_datapoint(datapoints, datapoint):
     elif type(datapoint) == list:
         datapoints += datapoint
 
+def isSkip(line):
+        for e in SKIP_WORDS:
+                if e in line:
+                        return True
+
+        return False
+
 def collect():
     global options
     datapoints = []
@@ -446,6 +453,8 @@ def collect():
         ts = int(time.time())
 
         for line in content.splitlines():
+            if isSkip(line):
+                continue
             la = line.strip().split(options.ngx_out_sep)
             append_datapoint(datapoints, Render.render(la))
 
